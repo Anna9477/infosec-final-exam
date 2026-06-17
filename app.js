@@ -88,6 +88,14 @@ function bindEvents() {
     button.classList.add("active");
   });
 
+  $("#chapter-count-buttons").addEventListener("click", (event) => {
+    const button = event.target.closest("button");
+    if (!button) return;
+    $$("#chapter-count-buttons button").forEach((item) => item.classList.remove("active"));
+    button.classList.add("active");
+    $("#chapter-custom-count").value = "";
+  });
+
   $("#start-chapter").addEventListener("click", startChapterPractice);
   $("#start-all").addEventListener("click", () => startSession("全部題庫練習", shuffle(questions), "practice"));
   $("#start-custom").addEventListener("click", startCustomQuickPractice);
@@ -277,7 +285,18 @@ function startChapterPractice() {
   const order = $("#chapter-order .active").dataset.order;
   let selected = questions.filter((question) => question.chapter === chapter);
   if (order === "random") selected = shuffle(selected);
+  selected = limitChapterQuestions(selected);
   startSession(`${chapterLabel(chapter)}章節練習`, selected, "practice");
+}
+
+function limitChapterQuestions(selected) {
+  const customCount = Number($("#chapter-custom-count").value);
+  const activeCount = $("#chapter-count-buttons .active").dataset.count;
+  if (customCount && customCount > 0) {
+    return selected.slice(0, Math.min(customCount, selected.length));
+  }
+  if (activeCount === "all") return selected;
+  return selected.slice(0, Math.min(Number(activeCount), selected.length));
 }
 
 function startCustomQuickPractice() {

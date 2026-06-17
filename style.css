@@ -22,10 +22,7 @@ body {
   min-height: 100vh;
   color: var(--ink);
   font-family: "Microsoft JhengHei", "Noto Sans TC", Arial, sans-serif;
-  background:
-    radial-gradient(circle at 10% 15%, rgba(143, 211, 255, 0.42), transparent 28%),
-    radial-gradient(circle at 82% 8%, rgba(255, 183, 207, 0.42), transparent 24%),
-    linear-gradient(135deg, #f6fbff 0%, #f7fff9 42%, #fff9e9 100%);
+  background: #f6fbff;
 }
 
 button,
@@ -70,7 +67,7 @@ button {
   border-radius: 18px;
   color: #ffffff;
   font-weight: 900;
-  background: linear-gradient(135deg, #56b8f6, #8d75ff 55%, #ff90b6);
+  background: #6aaefc;
   box-shadow: 0 14px 30px rgba(116, 126, 225, 0.26);
 }
 
@@ -133,7 +130,7 @@ button {
 }
 
 .nav-btn.active {
-  background: linear-gradient(135deg, rgba(143, 211, 255, 0.86), rgba(201, 183, 255, 0.86));
+  background: #d8edff;
   box-shadow: 0 14px 26px rgba(96, 137, 218, 0.18);
 }
 
@@ -236,7 +233,7 @@ button {
   gap: 18px;
   padding: 20px;
   margin-bottom: 18px;
-  background: linear-gradient(135deg, rgba(157, 239, 199, 0.72), rgba(143, 211, 255, 0.58));
+  background: #def8ea;
 }
 
 .resume-card h3,
@@ -280,12 +277,12 @@ button {
   font-size: 34px;
 }
 
-.blue { background: linear-gradient(135deg, rgba(143, 211, 255, 0.88), rgba(255, 255, 255, 0.72)); }
-.mint { background: linear-gradient(135deg, rgba(157, 239, 199, 0.88), rgba(255, 255, 255, 0.72)); }
-.purple { background: linear-gradient(135deg, rgba(201, 183, 255, 0.88), rgba(255, 255, 255, 0.72)); }
-.yellow { background: linear-gradient(135deg, rgba(255, 228, 139, 0.88), rgba(255, 255, 255, 0.72)); }
-.pink { background: linear-gradient(135deg, rgba(255, 183, 207, 0.88), rgba(255, 255, 255, 0.72)); }
-.green { background: linear-gradient(135deg, rgba(116, 221, 177, 0.88), rgba(255, 255, 255, 0.72)); }
+.blue { background: #d8edff; }
+.mint { background: #def8ea; }
+.purple { background: #e8e0ff; }
+.yellow { background: #fff0b8; }
+.pink { background: #ffe0ea; }
+.green { background: #d7f5e8; }
 
 .dashboard-grid,
 .mode-grid {
@@ -373,7 +370,7 @@ button {
   height: 100%;
   width: 0%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #56b8f6, #74ddb1, #ffe48b, #ff9ec2);
+  background: #6aaefc;
   transition: width 0.45s ease;
 }
 
@@ -421,7 +418,7 @@ input {
 
 .segmented button.active,
 .quick-buttons button.active {
-  background: linear-gradient(135deg, #8fd3ff, #9defc7);
+  background: #c9f3dc;
 }
 
 .primary {
@@ -430,7 +427,7 @@ input {
   border-radius: 18px;
   color: #ffffff;
   font-weight: 900;
-  background: linear-gradient(135deg, #49aaf0, #7e6cf3 56%, #ef79a8);
+  background: #6f8df7;
   box-shadow: 0 14px 28px rgba(104, 114, 225, 0.24);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -452,9 +449,7 @@ input {
   justify-content: space-between;
   gap: 20px;
   min-height: 260px;
-  background:
-    linear-gradient(135deg, rgba(143, 211, 255, 0.86), rgba(255, 183, 207, 0.64)),
-    rgba(255, 255, 255, 0.74);
+  background: #d8edff;
 }
 
 .exam-hero h3 {
@@ -497,7 +492,7 @@ input {
 
 .icon-btn.active {
   color: #ffffff;
-  background: linear-gradient(135deg, #ff8fb6, #8d75ff);
+  background: #ef7aa7;
 }
 
 .question-meta {
@@ -586,7 +581,7 @@ input {
   width: min(720px, 100%);
   margin: 40px auto 0;
   text-align: center;
-  background: linear-gradient(135deg, rgba(157, 239, 199, 0.76), rgba(143, 211, 255, 0.62), rgba(255, 183, 207, 0.5));
+  background: #def8ea;
 }
 
 .result-card h3 {

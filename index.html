@@ -109,6 +109,18 @@
               <button class="active" data-order="sequential">依序出題</button>
               <button data-order="random">隨機出題</button>
             </div>
+            <div class="field">
+              <label>練習題數</label>
+              <div class="quick-buttons chapter-count-buttons" id="chapter-count-buttons">
+                <button class="active" data-count="all">全部</button>
+                <button data-count="5">5 題</button>
+                <button data-count="10">10 題</button>
+                <button data-count="20">20 題</button>
+                <button data-count="30">30 題</button>
+                <button data-count="50">50 題</button>
+              </div>
+              <input id="chapter-custom-count" type="number" min="1" placeholder="或自訂題數，例如 25">
+            </div>
             <button id="start-chapter" class="primary wide">開始章節練習</button>
           </section>
           <section class="panel">
