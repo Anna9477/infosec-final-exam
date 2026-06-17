@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>資訊安全期末考刷題系統</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">IS</div>
+        <div>
+          <h1>資安期末刷題</h1>
+          <p>第8章到第13章</p>
+        </div>
+      </div>
+      <nav class="nav" aria-label="主要功能">
+        <button class="nav-btn active" data-view="dashboard">總覽</button>
+        <button class="nav-btn" data-view="practice">章節練習</button>
+        <button class="nav-btn" data-view="quick">快速練習</button>
+        <button class="nav-btn" data-view="exam">模擬考</button>
+        <button class="nav-btn" data-view="review">錯題與收藏</button>
+        <button class="nav-btn" data-view="history">紀錄分析</button>
+      </nav>
+      <button id="reset-data" class="ghost danger">重置資料</button>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Final sprint</p>
+          <h2 id="view-title">學習儀表板</h2>
+        </div>
+        <div class="top-actions">
+          <label class="import-btn">
+            匯入 questions.json
+            <input id="json-import" type="file" accept="application/json">
+          </label>
+        </div>
+      </header>
+
+      <section id="dashboard" class="view active">
+        <div id="load-warning" class="notice hidden"></div>
+        <div id="resume-card" class="resume-card hidden">
+          <div>
+            <p class="eyebrow">尚未完成</p>
+            <h3>繼續上次練習</h3>
+            <p id="resume-detail"></p>
+          </div>
+          <button id="resume-session" class="primary">繼續</button>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card blue"><span>總題數</span><strong id="stat-total">0</strong></article>
+          <article class="stat-card mint"><span>已完成題數</span><strong id="stat-completed">0</strong></article>
+          <article class="stat-card purple"><span>總答題數</span><strong id="stat-attempts">0</strong></article>
+          <article class="stat-card yellow"><span>整體正確率</span><strong id="stat-accuracy">0%</strong></article>
+          <article class="stat-card pink"><span>錯題數量</span><strong id="stat-wrong">0</strong></article>
+          <article class="stat-card green"><span>收藏題數</span><strong id="stat-favorites">0</strong></article>
+        </div>
+
+        <div class="dashboard-grid">
+          <section class="panel">
+            <div class="panel-head">
+              <h3>學習狀態</h3>
+              <span id="last-practice">尚無練習紀錄</span>
+            </div>
+            <div class="mini-metrics">
+              <div><span>最近模擬考</span><strong id="last-exam-score">--</strong></div>
+              <div><span>歷史最高分</span><strong id="best-score">--</strong></div>
+              <div><span>歷史平均分</span><strong id="avg-score">--</strong></div>
+              <div><span>最近5次平均</span><strong id="avg5-score">--</strong></div>
+            </div>
+          </section>
+
+          <section class="panel prediction-panel">
+            <div class="panel-head">
+              <h3>期末考成績預測</h3>
+              <span id="prediction-range">--</span>
+            </div>
+            <div class="prediction">
+              <div><span>保守</span><strong id="pred-safe">--</strong></div>
+              <div><span>正常</span><strong id="pred-normal">--</strong></div>
+              <div><span>樂觀</span><strong id="pred-optimistic">--</strong></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="panel">
+          <div class="panel-head">
+            <h3>各章完成度</h3>
+            <span>依照至少答過一次計算</span>
+          </div>
+          <div id="chapter-progress" class="progress-list"></div>
+        </section>
+      </section>
+
+      <section id="practice" class="view">
+        <div class="mode-grid">
+          <section class="panel">
+            <h3>章節練習模式</h3>
+            <div class="field">
+              <label for="chapter-select">選擇章節</label>
+              <select id="chapter-select"></select>
+            </div>
+            <div class="segmented" id="chapter-order">
+              <button class="active" data-order="sequential">依序出題</button>
+              <button data-order="random">隨機出題</button>
+            </div>
+            <button id="start-chapter" class="primary wide">開始章節練習</button>
+          </section>
+          <section class="panel">
+            <h3>全部題庫練習</h3>
+            <p class="soft-text">從全部題庫隨機排序，同一次練習不重複出題。</p>
+            <button id="start-all" class="primary wide">開始全部練習</button>
+          </section>
+        </div>
+      </section>
+
+      <section id="quick" class="view">
+        <section class="panel">
+          <h3>快速練習</h3>
+          <div class="quick-buttons" id="quick-buttons"></div>
+          <div class="custom-count">
+            <input id="custom-count" type="number" min="1" placeholder="自訂題數，例如 25">
+            <button id="start-custom" class="primary">開始</button>
+          </div>
+        </section>
+      </section>
+
+      <section id="exam" class="view">
+        <section class="exam-hero">
+          <div>
+            <p class="eyebrow">Final mock exam</p>
+            <h3>期末考模擬模式</h3>
+            <p>固定抽 100 題；若題庫不足 100 題，使用全部題目。完成後保存最近 20 次成績。</p>
+          </div>
+          <button id="start-exam" class="primary">開始模擬考</button>
+        </section>
+      </section>
+
+      <section id="review" class="view">
+        <div class="mode-grid">
+          <section class="panel">
+            <div class="panel-head">
+              <h3>錯題本</h3>
+              <span id="wrong-count">0 題</span>
+            </div>
+            <p class="soft-text">答錯自動加入，連續答對兩次才會移除。</p>
+            <button id="start-wrong" class="primary wide">刷錯題</button>
+          </section>
+          <section class="panel">
+            <div class="panel-head">
+              <h3>收藏題</h3>
+              <span id="favorite-count">0 題</span>
+            </div>
+            <p class="soft-text">任何題目都能收藏或取消收藏。</p>
+            <button id="start-favorite" class="primary wide">刷收藏</button>
+          </section>
+        </div>
+      </section>
+
+      <section id="history" class="view">
+        <div class="dashboard-grid">
+          <section class="panel">
+            <h3>弱點分析</h3>
+            <div id="weakness-list" class="weakness-list"></div>
+          </section>
+          <section class="panel">
+            <h3>模擬考歷史紀錄</h3>
+            <div id="exam-history" class="history-list"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="session-view" class="view">
+        <div class="quiz-layout">
+          <section class="quiz-card">
+            <div class="quiz-top">
+              <div>
+                <p id="session-label" class="eyebrow">練習中</p>
+                <h3 id="question-title"></h3>
+              </div>
+              <button id="favorite-toggle" class="icon-btn" title="收藏題目">收藏</button>
+            </div>
+            <div class="question-meta">
+              <span id="question-id"></span>
+              <span id="question-progress-text"></span>
+              <span id="timer">00:00</span>
+            </div>
+            <p id="question-text" class="question-text"></p>
+            <div id="options" class="options"></div>
+            <div id="feedback" class="feedback hidden"></div>
+            <div class="quiz-actions">
+              <button id="quit-session" class="ghost">結束</button>
+              <button id="next-question" class="primary hidden">下一題</button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <section id="result-view" class="view">
+        <section class="result-card">
+          <p class="eyebrow">完成</p>
+          <h3 id="result-title">練習完成</h3>
+          <div class="result-score" id="result-rate">0%</div>
+          <div class="result-grid">
+            <div><span>答對數</span><strong id="result-correct">0</strong></div>
+            <div><span>答錯數</span><strong id="result-wrong">0</strong></div>
+            <div><span>花費時間</span><strong id="result-time">00:00</strong></div>
+            <div><span>預估分數</span><strong id="result-score">--</strong></div>
+          </div>
+          <button class="primary" data-view-jump="dashboard">回到總覽</button>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="data/questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
