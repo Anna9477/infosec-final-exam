@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>資訊安全期末考刷題系統</title>
+  <title>資訊安全期末刷題</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar">
+    <header class="app-header">
       <div class="brand">
         <div class="brand-mark">IS</div>
         <div>
@@ -16,53 +16,77 @@
           <p>第8章到第13章</p>
         </div>
       </div>
-      <nav class="nav" aria-label="主要功能">
-        <button class="nav-btn active" data-view="dashboard">總覽</button>
-        <button class="nav-btn" data-view="practice">章節練習</button>
-        <button class="nav-btn" data-view="quick">快速練習</button>
-        <button class="nav-btn" data-view="exam">模擬考</button>
-        <button class="nav-btn" data-view="review">錯題與收藏</button>
-        <button class="nav-btn" data-view="history">紀錄分析</button>
-      </nav>
-      <button id="reset-data" class="ghost danger">重置資料</button>
-    </aside>
+    </header>
+
+    <nav class="nav" aria-label="主要功能">
+      <button class="nav-btn active" data-view="dashboard">首頁</button>
+      <button class="nav-btn" data-view="practice">章節</button>
+      <button class="nav-btn" data-view="all-practice">全部</button>
+      <button class="nav-btn" data-view="quick">快速</button>
+      <button class="nav-btn" data-view="exam">模考</button>
+      <button class="nav-btn" data-view="review">複習</button>
+      <button class="nav-btn" data-view="history">分析</button>
+    </nav>
 
     <main class="main">
-      <header class="topbar">
-        <div>
-          <p class="eyebrow">Final sprint</p>
-          <h2 id="view-title">學習儀表板</h2>
-        </div>
-        <div class="top-actions">
-          <label class="import-btn">
-            匯入 questions.json
-            <input id="json-import" type="file" accept="application/json">
-          </label>
-        </div>
-      </header>
+      <div class="topbar">
+        <h2 id="view-title">首頁</h2>
+      </div>
 
       <section id="dashboard" class="view active">
         <div id="load-warning" class="notice hidden"></div>
+
         <div id="resume-card" class="resume-card hidden">
           <div>
-            <p class="eyebrow">尚未完成</p>
-            <h3>繼續上次練習</h3>
+            <span class="label">上次未完成</span>
+            <h3>繼續練習</h3>
             <p id="resume-detail"></p>
           </div>
           <button id="resume-session" class="primary">繼續</button>
         </div>
 
-        <div class="stats-grid">
-          <article class="stat-card blue"><span>總題數</span><strong id="stat-total">0</strong></article>
-          <article class="stat-card mint"><span>已完成題數</span><strong id="stat-completed">0</strong></article>
-          <article class="stat-card purple"><span>總答題數</span><strong id="stat-attempts">0</strong></article>
-          <article class="stat-card yellow"><span>整體正確率</span><strong id="stat-accuracy">0%</strong></article>
-          <article class="stat-card pink"><span>錯題數量</span><strong id="stat-wrong">0</strong></article>
-          <article class="stat-card green"><span>收藏題數</span><strong id="stat-favorites">0</strong></article>
-        </div>
+        <section class="home-summary">
+          <div>
+            <span>總題數</span>
+            <strong id="stat-total">0</strong>
+          </div>
+          <div>
+            <span>完成</span>
+            <strong id="stat-completed">0</strong>
+          </div>
+          <div>
+            <span>正確率</span>
+            <strong id="stat-accuracy">0%</strong>
+          </div>
+        </section>
 
-        <div class="dashboard-grid">
-          <section class="panel">
+        <section class="action-list">
+          <button class="action-card" data-view-jump="practice">
+            <strong>章節練習</strong>
+            <span>選章節、題數、起始題號</span>
+          </button>
+          <button class="action-card" data-view-jump="quick">
+            <strong>快速練習</strong>
+            <span>5 到 100 題或自訂題數</span>
+          </button>
+          <button class="action-card" data-view-jump="exam">
+            <strong>模擬考</strong>
+            <span>隨機抽 100 題</span>
+          </button>
+          <button class="action-card" data-view-jump="review">
+            <strong>錯題與收藏</strong>
+            <span>針對弱點回刷</span>
+          </button>
+        </section>
+
+        <details class="compact-details">
+          <summary>查看完整狀態</summary>
+          <div class="stats-grid">
+            <article class="stat-card"><span>總答題數</span><strong id="stat-attempts">0</strong></article>
+            <article class="stat-card"><span>錯題數</span><strong id="stat-wrong">0</strong></article>
+            <article class="stat-card"><span>收藏題</span><strong id="stat-favorites">0</strong></article>
+          </div>
+          <section class="panel flat">
             <div class="panel-head">
               <h3>學習狀態</h3>
               <span id="last-practice">尚無練習紀錄</span>
@@ -74,10 +98,9 @@
               <div><span>最近5次平均</span><strong id="avg5-score">--</strong></div>
             </div>
           </section>
-
-          <section class="panel prediction-panel">
+          <section class="panel flat prediction-panel">
             <div class="panel-head">
-              <h3>期末考成績預測</h3>
+              <h3>成績預測</h3>
               <span id="prediction-range">--</span>
             </div>
             <div class="prediction">
@@ -86,49 +109,61 @@
               <div><span>樂觀</span><strong id="pred-optimistic">--</strong></div>
             </div>
           </section>
-        </div>
-
-        <section class="panel">
-          <div class="panel-head">
-            <h3>各章完成度</h3>
-            <span>依照至少答過一次計算</span>
-          </div>
-          <div id="chapter-progress" class="progress-list"></div>
-        </section>
+          <section class="panel flat">
+            <div class="panel-head">
+              <h3>各章完成度</h3>
+              <span>至少答過一次</span>
+            </div>
+            <div id="chapter-progress" class="progress-list"></div>
+          </section>
+        </details>
       </section>
 
       <section id="practice" class="view">
-        <div class="mode-grid">
-          <section class="panel">
-            <h3>章節練習模式</h3>
-            <div class="field">
-              <label for="chapter-select">選擇章節</label>
-              <select id="chapter-select"></select>
+        <section class="panel">
+          <h3>章節練習</h3>
+          <div class="field">
+            <label for="chapter-select">章節</label>
+            <select id="chapter-select"></select>
+          </div>
+          <div class="field two-fields">
+            <div>
+              <label for="chapter-start-index">從第幾題開始</label>
+              <input id="chapter-start-index" type="number" min="1" value="1">
             </div>
+            <div>
+              <label for="chapter-custom-count">自訂題數</label>
+              <input id="chapter-custom-count" type="number" min="1" placeholder="例如 25">
+            </div>
+          </div>
+          <div class="field">
+            <label>順序</label>
             <div class="segmented" id="chapter-order">
-              <button class="active" data-order="sequential">依序出題</button>
-              <button data-order="random">隨機出題</button>
+              <button class="active" data-order="sequential">依序</button>
+              <button data-order="random">隨機</button>
             </div>
-            <div class="field">
-              <label>練習題數</label>
-              <div class="quick-buttons chapter-count-buttons" id="chapter-count-buttons">
-                <button class="active" data-count="all">全部</button>
-                <button data-count="5">5 題</button>
-                <button data-count="10">10 題</button>
-                <button data-count="20">20 題</button>
-                <button data-count="30">30 題</button>
-                <button data-count="50">50 題</button>
-              </div>
-              <input id="chapter-custom-count" type="number" min="1" placeholder="或自訂題數，例如 25">
+          </div>
+          <div class="field">
+            <label>題數</label>
+            <div class="quick-buttons chapter-count-buttons" id="chapter-count-buttons">
+              <button class="active" data-count="all">全部</button>
+              <button data-count="5">5</button>
+              <button data-count="10">10</button>
+              <button data-count="20">20</button>
+              <button data-count="30">30</button>
+              <button data-count="50">50</button>
             </div>
-            <button id="start-chapter" class="primary wide">開始章節練習</button>
-          </section>
-          <section class="panel">
-            <h3>全部題庫練習</h3>
-            <p class="soft-text">從全部題庫隨機排序，同一次練習不重複出題。</p>
-            <button id="start-all" class="primary wide">開始全部練習</button>
-          </section>
-        </div>
+          </div>
+          <button id="start-chapter" class="primary wide">開始章節練習</button>
+        </section>
+      </section>
+
+      <section id="all-practice" class="view">
+        <section class="panel">
+          <h3>全部題庫練習</h3>
+          <p class="soft-text">從全部題庫隨機排序，同一次練習不重複出題。</p>
+          <button id="start-all" class="primary wide">開始全部練習</button>
+        </section>
       </section>
 
       <section id="quick" class="view">
@@ -143,13 +178,10 @@
       </section>
 
       <section id="exam" class="view">
-        <section class="exam-hero">
-          <div>
-            <p class="eyebrow">Final mock exam</p>
-            <h3>期末考模擬模式</h3>
-            <p>固定抽 100 題；若題庫不足 100 題，使用全部題目。完成後保存最近 20 次成績。</p>
-          </div>
-          <button id="start-exam" class="primary">開始模擬考</button>
+        <section class="panel">
+          <h3>期末考模擬</h3>
+          <p class="soft-text">固定抽 100 題；題庫不足 100 題時使用全部題目。</p>
+          <button id="start-exam" class="primary wide">開始模擬考</button>
         </section>
       </section>
 
@@ -160,7 +192,7 @@
               <h3>錯題本</h3>
               <span id="wrong-count">0 題</span>
             </div>
-            <p class="soft-text">答錯自動加入，連續答對兩次才會移除。</p>
+            <p class="soft-text">答錯自動加入，連續答對兩次才移除。</p>
             <button id="start-wrong" class="primary wide">刷錯題</button>
           </section>
           <section class="panel">
@@ -168,23 +200,22 @@
               <h3>收藏題</h3>
               <span id="favorite-count">0 題</span>
             </div>
-            <p class="soft-text">任何題目都能收藏或取消收藏。</p>
+            <p class="soft-text">可針對收藏題建立練習。</p>
             <button id="start-favorite" class="primary wide">刷收藏</button>
           </section>
         </div>
       </section>
 
       <section id="history" class="view">
-        <div class="dashboard-grid">
-          <section class="panel">
-            <h3>弱點分析</h3>
-            <div id="weakness-list" class="weakness-list"></div>
-          </section>
-          <section class="panel">
-            <h3>模擬考歷史紀錄</h3>
-            <div id="exam-history" class="history-list"></div>
-          </section>
-        </div>
+        <section class="panel">
+          <h3>弱點分析</h3>
+          <div id="weakness-list" class="weakness-list"></div>
+        </section>
+        <section class="panel">
+          <h3>模擬考歷史紀錄</h3>
+          <div id="exam-history" class="history-list"></div>
+        </section>
+        <button id="reset-data" class="ghost danger wide">重置練習資料</button>
       </section>
 
       <section id="session-view" class="view">
@@ -192,7 +223,7 @@
           <section class="quiz-card">
             <div class="quiz-top">
               <div>
-                <p id="session-label" class="eyebrow">練習中</p>
+                <p id="session-label" class="label">練習中</p>
                 <h3 id="question-title"></h3>
               </div>
               <button id="favorite-toggle" class="icon-btn" title="收藏題目">收藏</button>
@@ -215,16 +246,16 @@
 
       <section id="result-view" class="view">
         <section class="result-card">
-          <p class="eyebrow">完成</p>
+          <p class="label">完成</p>
           <h3 id="result-title">練習完成</h3>
           <div class="result-score" id="result-rate">0%</div>
           <div class="result-grid">
-            <div><span>答對數</span><strong id="result-correct">0</strong></div>
-            <div><span>答錯數</span><strong id="result-wrong">0</strong></div>
-            <div><span>花費時間</span><strong id="result-time">00:00</strong></div>
-            <div><span>預估分數</span><strong id="result-score">--</strong></div>
+            <div><span>答對</span><strong id="result-correct">0</strong></div>
+            <div><span>答錯</span><strong id="result-wrong">0</strong></div>
+            <div><span>時間</span><strong id="result-time">00:00</strong></div>
+            <div><span>分數</span><strong id="result-score">--</strong></div>
           </div>
-          <button class="primary" data-view-jump="dashboard">回到總覽</button>
+          <button class="primary wide" data-view-jump="dashboard">回首頁</button>
         </section>
       </section>
     </main>

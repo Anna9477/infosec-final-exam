@@ -17,6 +17,7 @@ let bank = { questions: [], chapters: {} };
 let questions = [];
 let state = loadState();
 let timerHandle = null;
+let autoAdvanceHandle = null;
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -57,7 +58,7 @@ async function loadQuestionBank() {
       bank = await response.json();
     } catch {
       bank = { questions: [], chapters: {} };
-      showLoadWarning("尚未載入題庫。請先執行轉換腳本，或使用右上角匯入 questions.json。");
+      showLoadWarning("尚未載入題庫。請先執行轉換腳本產生 data/questions.js。");
     }
   }
   questions = Array.isArray(bank.questions) ? bank.questions : [];
@@ -107,10 +108,11 @@ function bindEvents() {
   $("#quit-session").addEventListener("click", quitSession);
   $("#favorite-toggle").addEventListener("click", toggleCurrentFavorite);
   $("#reset-data").addEventListener("click", resetData);
-  $("#json-import").addEventListener("change", importQuestionJson);
+  $("#json-import")?.addEventListener("change", importQuestionJson);
 }
 
 function showView(viewId) {
+  if (viewId !== "session-view") clearAutoAdvance();
   $$(".view").forEach((view) => view.classList.remove("active"));
   $(`#${viewId}`).classList.add("active");
   $$(".nav-btn").forEach((button) => button.classList.toggle("active", button.dataset.view === viewId));
@@ -121,14 +123,15 @@ function showView(viewId) {
 
 function getViewTitle(viewId) {
   const titles = {
-    dashboard: "學習儀表板",
-    practice: "練習模式",
+    dashboard: "首頁",
+    practice: "章節練習",
+    "all-practice": "全部題庫",
     quick: "快速練習",
     exam: "期末考模擬",
     review: "錯題與收藏",
-    history: "紀錄分析",
-    "session-view": "即時作答",
-    "result-view": "完成結果"
+    history: "分析紀錄",
+    "session-view": "作答",
+    "result-view": "結果"
   };
   return titles[viewId] || "資安期末刷題";
 }
@@ -283,7 +286,9 @@ function renderExamHistory() {
 function startChapterPractice() {
   const chapter = $("#chapter-select").value;
   const order = $("#chapter-order .active").dataset.order;
-  let selected = questions.filter((question) => question.chapter === chapter);
+  const startIndex = Math.max(1, Number($("#chapter-start-index").value) || 1);
+  let selected = questions.filter((question) => question.chapter === chapter).slice(startIndex - 1);
+  if (!selected.length) return alert("起始題號超過本章題數。");
   if (order === "random") selected = shuffle(selected);
   selected = limitChapterQuestions(selected);
   startSession(`${chapterLabel(chapter)}章節練習`, selected, "practice");
@@ -322,7 +327,8 @@ function startFavoritePractice() {
 }
 
 function startSession(title, selectedQuestions, type) {
-  if (!questions.length) return alert("目前沒有題庫，請先轉換或匯入 questions.json。");
+  clearAutoAdvance();
+  if (!questions.length) return alert("目前沒有題庫，請先執行轉換腳本產生 data/questions.js。");
   if (!selectedQuestions.length) return alert("沒有符合條件的題目。");
   const unique = dedupeQuestions(selectedQuestions);
   state.activeSession = {
@@ -406,7 +412,12 @@ function answerQuestion(selectedLetter) {
   updateQuestionStats(question, isCorrect);
   paintAnswer(selectedLetter, question.answer);
   showFeedback(isCorrect, question.answer);
-  $("#next-question").classList.remove("hidden");
+  if (isCorrect) {
+    $("#next-question").classList.add("hidden");
+    scheduleAutoAdvance();
+  } else {
+    $("#next-question").classList.remove("hidden");
+  }
   state.lastPracticeAt = new Date().toISOString();
   saveState();
   renderAll();
@@ -441,11 +452,12 @@ function paintAnswer(selectedLetter, correctLetter) {
 
 function showFeedback(isCorrect, correctLetter) {
   const feedback = $("#feedback");
-  feedback.textContent = isCorrect ? "答對了，這題已鎖定。" : `答錯了，正確答案是 ${correctLetter}。`;
+  feedback.textContent = isCorrect ? "答對了，1 秒後自動下一題。" : `答錯了，正確答案是 ${correctLetter}。`;
   feedback.classList.remove("hidden");
 }
 
 function nextQuestion() {
+  clearAutoAdvance();
   const session = state.activeSession;
   if (!session) return;
   if (session.currentIndex + 1 >= session.questionIds.length) {
@@ -458,7 +470,21 @@ function nextQuestion() {
   renderQuestion();
 }
 
+function scheduleAutoAdvance() {
+  clearAutoAdvance();
+  autoAdvanceHandle = setTimeout(() => {
+    autoAdvanceHandle = null;
+    nextQuestion();
+  }, 1000);
+}
+
+function clearAutoAdvance() {
+  if (autoAdvanceHandle) clearTimeout(autoAdvanceHandle);
+  autoAdvanceHandle = null;
+}
+
 function finishSession() {
+  clearAutoAdvance();
   const session = state.activeSession;
   if (!session) return;
   const duration = currentDuration(session);
@@ -497,6 +523,7 @@ function showResult(session, correct, wrong, accuracy, score, duration) {
 }
 
 function quitSession() {
+  clearAutoAdvance();
   const session = state.activeSession;
   if (!session) return;
   session.elapsedBeforeResume = currentDuration(session);
